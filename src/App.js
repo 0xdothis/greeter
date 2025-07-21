@@ -11,18 +11,12 @@ function App() {
   const [address, setAddress] = useState("");
   const [result, setResult] = useState("");
   let signer;
-
-  React.useEffect(function () {
-    if (!window.ethereum) {
-      connectWallet();
-    }
-  });
+  let provider = new ethers.BrowserProvider(window.ethereum);
 
   async function connectWallet() {
     if (window.ethereum) {
       await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      signer = await provider.getSigner();
+      provider = signer = await provider.getSigner();
       const addy = `${signer.address.slice(0, 5)}.....${signer.address.slice(
         -5
       )}`;
@@ -42,9 +36,12 @@ function App() {
         return;
       }
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
       signer = await provider.getSigner();
+      const addy = `${signer.address.slice(0, 5)}.....${signer.address.slice(
+        -5
+      )}`;
 
+      setAddress(addy);
       const contract = new ethers.Contract(contractAddress, abi, signer);
       const tx = await contract.setMessage(text);
       const txReceipt = await tx.wait();
@@ -59,8 +56,12 @@ function App() {
 
   async function handleGet() {
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
       signer = await provider.getSigner();
+      const addy = `${signer.address.slice(0, 5)}.....${signer.address.slice(
+        -5
+      )}`;
+
+      setAddress(addy);
       const contract = new ethers.Contract(contractAddress, abi, signer);
       const tx = await contract.getMessage();
       const txReceipt = await tx;
